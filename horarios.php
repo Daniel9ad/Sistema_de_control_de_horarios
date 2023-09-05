@@ -2,9 +2,11 @@
 include('sesion.php');
 include('conexion.php');
 
-$sql = "SELECT * FROM aula a
-LEFT JOIN horarios h ON h.ida=a.id";
+$sql = "SELECT * FROM aula";
 $resultado = $con->query($sql);
+#$resultado2 = $con->query($sql2);
+#$horarios = $resultado2->fetch_assoc();
+#echo $horarios[0]->hora_inicio;
 ?>
 
 <!DOCTYPE html>
@@ -15,7 +17,7 @@ $resultado = $con->query($sql);
     <title>Horarios</title>
 
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <script src="js/Ajax.js"></script>
+    <script src="js/m.js"></script>
 </head>
 
 <body class="bg-body-tertiary">
@@ -59,32 +61,32 @@ $resultado = $con->query($sql);
                 <div class="d-flex flex-shrink-0 bg-body-tertiary">
     				<ul class="nav nav-pills mb-auto">
     				    <li class="nav-item">
-    				        <a href="javascript:actualizarC('1')" class="btn btn-dark active" id='c1'>
+    				        <a href="javascript:actualizarC('lunes')" class="btn btn-dark active" id='c1'>
     				          Lunes
     				        </a>
     				    </li>
     				    <li>
-    				        <a href="javascript:actualizarC('2')" class="nav-link link-body-emphasis" id='c2'>
+    				        <a href="javascript:actualizarC('martes')" class="nav-link link-body-emphasis" id='c2'>
     				          Martes
     				        </a>
     				    </li>
                         <li>
-    				        <a href="javascript:actualizarC('2')" class="nav-link link-body-emphasis" id='c2'>
+    				        <a href="javascript:actualizarC('miercoles')" class="nav-link link-body-emphasis" id='c3'>
     				          Miercoles
     				        </a>
     				    </li>
                         <li>
-    				        <a href="javascript:actualizarC('2')" class="nav-link link-body-emphasis" id='c2'>
+    				        <a href="javascript:actualizarC('jueves')" class="nav-link link-body-emphasis" id='c4'>
     				          Jueves
     				        </a>
     				    </li>
                         <li>
-    				        <a href="javascript:actualizarC('2')" class="nav-link link-body-emphasis" id='c2'>
+    				        <a href="javascript:actualizarC('viernes')" class="nav-link link-body-emphasis" id='c5'>
     				          Viernes
     				        </a>
     				    </li>
                         <li>
-    				        <a href="javascript:actualizarC('2')" class="nav-link link-body-emphasis" id='c2'>
+    				        <a href="javascript:actualizarC('sabado')" class="nav-link link-body-emphasis" id='c6'>
     				          Sabado
     				        </a>
     				    </li>
@@ -107,30 +109,46 @@ $resultado = $con->query($sql);
 					<tbody id='h'>
                         <?php while ($row = $resultado->fetch_assoc()) {?>
 					    	<tr>
-                                <?php  
-                                    $hora = 0;
-                                    if ($row['hora_inicio']=='07:00:00' & $row['hora_fin']=='09:00:00'){
-                                        $hora = 1;
-                                    }else if (($row['hora_inicio']=='09:00:00' & $row['hora_fin']=='11:00:00')){
-                                        $hora = 2;
-                                    }else if (($row['hora_inicio']=='11:00:00' & $row['hora_fin']=='13:00:00')){
-                                        $hora = 3;
-                                    }else if (($row['hora_inicio']=='14:00:00' & $row['hora_fin']=='16:00:00')){
-                                        $hora = 4;
-                                    }
-                                ?>
                                 <td><?php echo $row['nombre'] ?></td>
-                                <?php 
-                                    for ($i=1; $i<=7; $i++) {
-                                        if ($i==$hora){
-                                            echo "<td>x</td>";
-                                        }else{
-                                            echo "<td>-</td>";
+                                <?php
+                                    $idaula = $row['id'];
+                                    $sql2 = "SELECT * FROM horarios
+                                    WHERE dia='lunes' and ida=$idaula";
+                                    $resultado2 = $con->query($sql2);
+                                    $r = $resultado2->fetch_assoc();
+                                    if (isset($r)){
+                                        $hora = 0;
+                                        if ($r['hora_inicio']=='07:00:00' & $r['hora_fin']=='09:00:00'){
+                                            $hora = 1;
+                                        }else if (($r['hora_inicio']=='09:00:00' & $r['hora_fin']=='11:00:00')){
+                                            $hora = 2;
+                                        }else if (($r['hora_inicio']=='11:00:00' & $r['hora_fin']=='13:00:00')){
+                                            $hora = 3;
+                                        }else if (($r['hora_inicio']=='14:00:00' & $r['hora_fin']=='16:00:00')){
+                                            $hora = 4;
+                                        }else if (($r['hora_inicio']=='16:00:00' & $r['hora_fin']=='18:00:00')){
+                                            $hora = 5;
+                                        }else if (($r['hora_inicio']=='18:00:00' & $r['hora_fin']=='20:00:00')){
+                                            $hora = 6;
+                                        }else if (($r['hora_inicio']=='20:00:00' & $r['hora_fin']=='22:00:00')){
+                                            $hora = 7;
                                         }
-                                    }
-                                    if ($hora!=0){
+                                        for ($i=1; $i<=7; $i++) {
+                                            if ($i==$hora){
+                                                echo "<td>x</td>";
+                                            }else{
+                                                echo "<td>-</td>";
+                                            }
+                                        }
                                         echo "<td>Asignado</td>";
                                     }else{
+                                        echo "<td>-</td>";
+                                        echo "<td>-</td>";
+                                        echo "<td>-</td>";
+                                        echo "<td>-</td>";
+                                        echo "<td>-</td>";
+                                        echo "<td>-</td>";
+                                        echo "<td>-</td>";
                                         echo "<td>No Asignado</td>";
                                     }
                                 ?>
@@ -148,7 +166,8 @@ $resultado = $con->query($sql);
 
 
 
-
+    <script>
+    </script>
 
 
     <script src="js/bootstrap.bundle.min.js"></script>
