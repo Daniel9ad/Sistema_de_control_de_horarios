@@ -1,12 +1,6 @@
 <?php
 include('sesion.php');
 include('conexion.php');
-
-$sql = "SELECT * FROM aula";
-$resultado = $con->query($sql);
-#$resultado2 = $con->query($sql2);
-#$horarios = $resultado2->fetch_assoc();
-#echo $horarios[0]->hora_inicio;
 ?>
 
 <!DOCTYPE html>
@@ -53,6 +47,10 @@ $resultado = $con->query($sql);
             </div>
         </div>
     </header>
+
+    <?php if ($tipo=='administrador') { 
+    $sql = "SELECT * FROM aula";
+    $resultado = $con->query($sql);?>
 
     <main class="container pt-5">
 		<div class="row g-5">
@@ -159,16 +157,80 @@ $resultado = $con->query($sql);
 			</div>
 		</div>
 	</main>
+    <?php } else if ($tipo=='estudiante') {
+        $sql = "SELECT * FROM inscripciones WHERE ide=$id";
+        $resultado = $con->query($sql);?>
 
-
-
-
-
-
-
-    <script>
-    </script>
-
+        <main class="container pt-5">
+		<div class="row g-5">
+			<div class="table-responsive small">
+				<h2>Horarios</h2>
+				<table class="table table-striped table-sm table-hover mt-3">
+					<thead>
+						<tr>
+							<th scope="col">Dia</th>
+							<th scope="0">07:00-09:00</th>
+							<th scope="1">09:00-11:00</th>
+							<th scope="1">11:00-13-00</th>
+                            <th scope="1">14:00-16:00</th>
+                            <th scope="1">16:00-18:00</th>
+                            <th scope="1">18:00-20:00</th>
+                            <th scope="1">20:00-22:00</th>
+						</tr>
+					</thead>
+					<tbody id='h'>
+                        <?php while ($row = $resultado->fetch_assoc()) {?>
+					    	<tr>
+                                <?php
+                                    $idh = $row['idh'];
+                                    $sql2 = "SELECT * FROM horarios
+                                    WHERE id=$idh";
+                                    $resultado2 = $con->query($sql2);
+                                    $r = $resultado2->fetch_assoc();
+                                    $dia = $r['dia'];
+                                    if (isset($r)){
+                                        $hora = 0;
+                                        if ($r['hora_inicio']=='07:00:00' & $r['hora_fin']=='09:00:00'){
+                                            $hora = 1;
+                                        }else if (($r['hora_inicio']=='09:00:00' & $r['hora_fin']=='11:00:00')){
+                                            $hora = 2;
+                                        }else if (($r['hora_inicio']=='11:00:00' & $r['hora_fin']=='13:00:00')){
+                                            $hora = 3;
+                                        }else if (($r['hora_inicio']=='14:00:00' & $r['hora_fin']=='16:00:00')){
+                                            $hora = 4;
+                                        }else if (($r['hora_inicio']=='16:00:00' & $r['hora_fin']=='18:00:00')){
+                                            $hora = 5;
+                                        }else if (($r['hora_inicio']=='18:00:00' & $r['hora_fin']=='20:00:00')){
+                                            $hora = 6;
+                                        }else if (($r['hora_inicio']=='20:00:00' & $r['hora_fin']=='22:00:00')){
+                                            $hora = 7;
+                                        }
+                                        echo "<td>$dia</td>";
+                                        for ($i=1; $i<=7; $i++) {
+                                            if ($i==$hora){
+                                                echo "<td>x</td>";
+                                            }else{
+                                                echo "<td>-</td>";
+                                            }
+                                        }
+                                    }else{
+                                        echo "<td>-</td>";
+                                        echo "<td>-</td>";
+                                        echo "<td>-</td>";
+                                        echo "<td>-</td>";
+                                        echo "<td>-</td>";
+                                        echo "<td>-</td>";
+                                        echo "<td>-</td>";
+                                    }
+                                ?>
+					    	</tr>
+                        <?php } ?>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</main>
+    <?php } ?>
 
     <script src="js/bootstrap.bundle.min.js"></script>
 </body>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 05-09-2023 a las 23:04:14
+-- Tiempo de generación: 06-09-2023 a las 02:56:30
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -39,7 +39,8 @@ CREATE TABLE `aula` (
 
 INSERT INTO `aula` (`id`, `nombre`, `estado`) VALUES
 (1, 'C101', 0),
-(2, 'C201', 0);
+(2, 'C201', 0),
+(3, 'C301', 0);
 
 -- --------------------------------------------------------
 
@@ -61,7 +62,31 @@ CREATE TABLE `horarios` (
 
 INSERT INTO `horarios` (`id`, `dia`, `hora_inicio`, `hora_fin`, `ida`) VALUES
 (1, 'lunes', '07:00:00', '09:00:00', 1),
-(2, 'lunes', '11:00:00', '13:00:00', 2);
+(2, 'lunes', '11:00:00', '13:00:00', 2),
+(3, 'martes', '14:00:00', '16:00:00', 2),
+(4, 'miercoles', '16:00:00', '18:00:00', 1),
+(5, 'viernes', '11:00:00', '13:00:00', 2);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `inscripciones`
+--
+
+CREATE TABLE `inscripciones` (
+  `id` int(11) NOT NULL,
+  `idh` int(11) NOT NULL,
+  `ide` int(11) NOT NULL,
+  `materia` varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `inscripciones`
+--
+
+INSERT INTO `inscripciones` (`id`, `idh`, `ide`, `materia`) VALUES
+(1, 2, 2, 'Sis421'),
+(2, 4, 2, 'Sis256');
 
 -- --------------------------------------------------------
 
@@ -100,6 +125,12 @@ ALTER TABLE `horarios`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indices de la tabla `inscripciones`
+--
+ALTER TABLE `inscripciones`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `usuario`
 --
 ALTER TABLE `usuario`
@@ -113,12 +144,18 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `aula`
 --
 ALTER TABLE `aula`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `horarios`
 --
 ALTER TABLE `horarios`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT de la tabla `inscripciones`
+--
+ALTER TABLE `inscripciones`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
