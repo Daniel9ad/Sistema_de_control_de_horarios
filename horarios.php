@@ -90,64 +90,61 @@ include('conexion.php');
     				    </li>
     				</ul>
 				</div>
-				<table class="table table-striped table-sm table-hover mt-3">
+				<table class="table table-striped mt-3">
 					<thead>
 						<tr>
-							<th scope="col">#Aula</th>
-							<th scope="0">07:00-09:00</th>
-							<th scope="1">09:00-11:00</th>
-							<th scope="1">11:00-13-00</th>
-                            <th scope="1">14:00-16:00</th>
-                            <th scope="1">16:00-18:00</th>
-                            <th scope="1">18:00-20:00</th>
-                            <th scope="1">20:00-22:00</th>
-                            <th scope="estado">Estado</th>
+							<th scope="col" class="text-center">#Aula</th>
+							<th scope="0" class="text-center">07:00-09:00</th>
+							<th scope="1" class="text-center">09:00-11:00</th>
+							<th scope="1" class="text-center">11:00-13-00</th>
+                            <th scope="1" class="text-center">14:00-16:00</th>
+                            <th scope="1" class="text-center">16:00-18:00</th>
+                            <th scope="1" class="text-center">18:00-20:00</th>
+                            <th scope="1" class="text-center">20:00-22:00</th>
+                            <th scope="estado" class="text-center">Estado</th>
 						</tr>
 					</thead>
 					<tbody id='h'>
                         <?php while ($row = $resultado->fetch_assoc()) {?>
 					    	<tr>
-                                <td><?php echo $row['nombre'] ?></td>
+                                <td class="text-center"><?php echo $row['nombre'] ?></td>
                                 <?php
                                     $idaula = $row['id'];
                                     $sql2 = "SELECT * FROM horarios
                                     WHERE dia='lunes' and ida=$idaula";
                                     $resultado2 = $con->query($sql2);
-                                    $r = $resultado2->fetch_assoc();
-                                    if (isset($r)){
-                                        $hora = 0;
+                                    $horas = [];
+                                    while ($r = $resultado2->fetch_assoc()){
                                         if ($r['hora_inicio']=='07:00:00' & $r['hora_fin']=='09:00:00'){
-                                            $hora = 1;
+                                            array_push($horas, 1);
                                         }else if (($r['hora_inicio']=='09:00:00' & $r['hora_fin']=='11:00:00')){
-                                            $hora = 2;
+                                            array_push($horas, 2);
                                         }else if (($r['hora_inicio']=='11:00:00' & $r['hora_fin']=='13:00:00')){
-                                            $hora = 3;
+                                            array_push($horas, 3);
                                         }else if (($r['hora_inicio']=='14:00:00' & $r['hora_fin']=='16:00:00')){
-                                            $hora = 4;
+                                            array_push($horas, 4);
                                         }else if (($r['hora_inicio']=='16:00:00' & $r['hora_fin']=='18:00:00')){
-                                            $hora = 5;
+                                            array_push($horas, 5);
                                         }else if (($r['hora_inicio']=='18:00:00' & $r['hora_fin']=='20:00:00')){
-                                            $hora = 6;
+                                            array_push($horas, 6);
                                         }else if (($r['hora_inicio']=='20:00:00' & $r['hora_fin']=='22:00:00')){
-                                            $hora = 7;
+                                            array_push($horas, 7);
                                         }
-                                        for ($i=1; $i<=7; $i++) {
-                                            if ($i==$hora){
-                                                echo "<td>x</td>";
-                                            }else{
-                                                echo "<td>-</td>";
-                                            }
+                                    }
+                                    for ($i=1; $i<=7; $i++) {
+                                        if (in_array($i ,$horas)){
+                                            echo '<td class="text-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                                            </svg>
+                                            </td>';
+                                        }else{
+                                            echo '<td class="text-center">-</td>';
                                         }
-                                        echo "<td>Asignado</td>";
+                                    }
+                                    if (count($horas)==0){
+                                        echo '<td class="text-center">No Asignado</td>';
                                     }else{
-                                        echo "<td>-</td>";
-                                        echo "<td>-</td>";
-                                        echo "<td>-</td>";
-                                        echo "<td>-</td>";
-                                        echo "<td>-</td>";
-                                        echo "<td>-</td>";
-                                        echo "<td>-</td>";
-                                        echo "<td>No Asignado</td>";
+                                        echo '<td class="text-center">Asignado</td>';
                                     }
                                 ?>
 					    	</tr>
@@ -158,69 +155,70 @@ include('conexion.php');
 		</div>
 	</main>
     <?php } else if ($tipo=='estudiante') {
-        $sql = "SELECT * FROM inscripciones WHERE ide=$id";
-        $resultado = $con->query($sql);?>
+        $dias = ['lunes','martes','miercoles','jueves','viernes','sabado'];?>
 
         <main class="container pt-5">
 		<div class="row g-5">
 			<div class="table-responsive small">
 				<h2>Horarios</h2>
-				<table class="table table-striped table-sm table-hover mt-3">
+				<table class="table table-striped table-sm mt-3">
 					<thead>
 						<tr>
-							<th scope="col">Dia</th>
-							<th scope="0">07:00-09:00</th>
-							<th scope="1">09:00-11:00</th>
-							<th scope="1">11:00-13-00</th>
-                            <th scope="1">14:00-16:00</th>
-                            <th scope="1">16:00-18:00</th>
-                            <th scope="1">18:00-20:00</th>
-                            <th scope="1">20:00-22:00</th>
+                            <th scope="col" class="text-center">#Dia</th>
+							<th scope="0" class="text-center">07:00-09:00</th>
+							<th scope="1" class="text-center">09:00-11:00</th>
+							<th scope="1" class="text-center">11:00-13-00</th>
+                            <th scope="1" class="text-center">14:00-16:00</th>
+                            <th scope="1" class="text-center">16:00-18:00</th>
+                            <th scope="1" class="text-center">18:00-20:00</th>
+                            <th scope="1" class="text-center">20:00-22:00</th>
 						</tr>
 					</thead>
 					<tbody id='h'>
-                        <?php while ($row = $resultado->fetch_assoc()) {?>
+                        <?php foreach ($dias as $dia) {?>
 					    	<tr>
+                                <td class="text-center"><?php echo $dia ?></td>
                                 <?php
-                                    $idh = $row['idh'];
-                                    $sql2 = "SELECT * FROM horarios
-                                    WHERE id=$idh";
-                                    $resultado2 = $con->query($sql2);
-                                    $r = $resultado2->fetch_assoc();
-                                    $dia = $r['dia'];
-                                    if (isset($r)){
-                                        $hora = 0;
+                                    $sql = "SELECT * FROM inscripciones i
+                                    LEFT JOIN horarios h ON i.idh=h.id
+                                    LEFT JOIN aula a ON h.ida=a.id
+                                    WHERE i.ide=$id and h.dia='$dia'";
+                                    $resultado = $con->query($sql);
+                                    $horas = [];
+                                    $materias = [];
+                                    while ($r = $resultado->fetch_assoc()){
                                         if ($r['hora_inicio']=='07:00:00' & $r['hora_fin']=='09:00:00'){
-                                            $hora = 1;
+                                            array_push($horas, 1);
+                                            array_push($materias, $r['materia']);
                                         }else if (($r['hora_inicio']=='09:00:00' & $r['hora_fin']=='11:00:00')){
-                                            $hora = 2;
+                                            array_push($horas, 2);
+                                            array_push($materias, $r['materia']);
                                         }else if (($r['hora_inicio']=='11:00:00' & $r['hora_fin']=='13:00:00')){
-                                            $hora = 3;
+                                            array_push($horas, 3);
+                                            array_push($materias, $r['materia']);
                                         }else if (($r['hora_inicio']=='14:00:00' & $r['hora_fin']=='16:00:00')){
-                                            $hora = 4;
+                                            array_push($horas, 4);
+                                            array_push($materias, $r['materia']);
                                         }else if (($r['hora_inicio']=='16:00:00' & $r['hora_fin']=='18:00:00')){
-                                            $hora = 5;
+                                            array_push($horas, 5);
+                                            array_push($materias, $r['materia']);
                                         }else if (($r['hora_inicio']=='18:00:00' & $r['hora_fin']=='20:00:00')){
-                                            $hora = 6;
+                                            array_push($horas, 6);
+                                            array_push($materias, $r['materia']);
                                         }else if (($r['hora_inicio']=='20:00:00' & $r['hora_fin']=='22:00:00')){
-                                            $hora = 7;
+                                            array_push($horas, 7);
+                                            array_push($materias, $r['materia']);
                                         }
-                                        echo "<td>$dia</td>";
-                                        for ($i=1; $i<=7; $i++) {
-                                            if ($i==$hora){
-                                                echo "<td>x</td>";
-                                            }else{
-                                                echo "<td>-</td>";
-                                            }
+                                    }
+                                    $c = 0;
+                                    for ($i=1; $i<=7; $i++) {
+                                        if (in_array($i ,$horas)){
+                                            $materia = $materias[$c];
+                                            echo '<td class="text-center">'.$materia.'</td>';
+                                            $c = $c + 1;
+                                        }else{
+                                            echo '<td class="text-center">-</td>';
                                         }
-                                    }else{
-                                        echo "<td>-</td>";
-                                        echo "<td>-</td>";
-                                        echo "<td>-</td>";
-                                        echo "<td>-</td>";
-                                        echo "<td>-</td>";
-                                        echo "<td>-</td>";
-                                        echo "<td>-</td>";
                                     }
                                 ?>
 					    	</tr>
