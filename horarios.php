@@ -154,7 +154,7 @@ include('conexion.php');
 			</div>
 		</div>
 	</main>
-    <?php } else if ($tipo=='estudiante') {
+    <?php } else if ($tipo=='estudiante' or $tipo=='docente') {
         $dias = ['lunes','martes','miercoles','jueves','viernes','sabado'];?>
 
         <main class="container pt-5">
@@ -180,7 +180,8 @@ include('conexion.php');
                                 <td class="text-center"><?php echo $dia ?></td>
                                 <?php
                                     $sql = "SELECT * FROM inscripciones i
-                                    LEFT JOIN horarios h ON i.idh=h.id
+                                    LEFT JOIN materias m ON i.idm=m.id
+                                    LEFT JOIN horarios h ON m.idh=h.id
                                     LEFT JOIN aula a ON h.ida=a.id
                                     WHERE i.ide=$id and h.dia='$dia'";
                                     $resultado = $con->query($sql);
