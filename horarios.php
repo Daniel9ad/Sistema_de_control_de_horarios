@@ -12,6 +12,7 @@ include('conexion.php');
 
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <script src="js/m.js"></script>
+    <script src="js/bootstrap.min.js"></script>
 </head>
 
 <body class="bg-body-tertiary">
@@ -93,7 +94,7 @@ include('conexion.php');
 				<table class="table table-striped mt-3">
 					<thead>
 						<tr>
-							<th scope="col" class="text-center">#Aula</th>
+							<th scope="col" class="text-center">Aula</th>
 							<th scope="0" class="text-center">07:00-09:00</th>
 							<th scope="1" class="text-center">09:00-11:00</th>
 							<th scope="1" class="text-center">11:00-13-00</th>
@@ -102,6 +103,7 @@ include('conexion.php');
                             <th scope="1" class="text-center">18:00-20:00</th>
                             <th scope="1" class="text-center">20:00-22:00</th>
                             <th scope="estado" class="text-center">Estado</th>
+                            <th scope="accion" class="text-center">Accion</th>
 						</tr>
 					</thead>
 					<tbody id='h'>
@@ -133,7 +135,7 @@ include('conexion.php');
                                     }
                                     for ($i=1; $i<=7; $i++) {
                                         if (in_array($i ,$horas)){
-                                            echo '<td class="text-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                                            echo '<td class="text-center"><svg width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
                                             <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
                                             </svg>
                                             </td>';
@@ -147,6 +149,13 @@ include('conexion.php');
                                         echo '<td class="text-center">Asignado</td>';
                                     }
                                 ?>
+                                <td class="text-center">
+                                    <button class="btn btn-outline-secondary d-inline-flex align-items-center"
+                                    data-bs-toggle="modal" data-bs-target="#ventanaEmergente"
+                                    style="padding: 0.5px 4px 0.5px 4px; font-size: 0.8rem;">
+                                    <b>Editar</b>
+                                    </button>
+                                </td>
 					    	</tr>
                         <?php } ?>
 					</tbody>
@@ -154,6 +163,25 @@ include('conexion.php');
 			</div>
 		</div>
 	</main>
+
+ <!-- Ventana emergente (modal) -->
+ <div class="modal fade" id="ventanaEmergente" tabindex="-1" role="dialog" aria-labelledby="ventanaEmergenteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ventanaEmergenteLabel">Contenido de la Ventana Emergente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div id="contenidoVentanaEmergente"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
     <?php } else if ($tipo=='estudiante' or $tipo=='docente') {
         $dias = ['lunes','martes','miercoles','jueves','viernes','sabado'];?>
 
@@ -179,44 +207,40 @@ include('conexion.php');
 					    	<tr>
                                 <td class="text-center"><?php echo $dia ?></td>
                                 <?php
-                                    $sql = "SELECT * FROM inscripciones i
-                                    LEFT JOIN materias m ON i.idm=m.id
-                                    LEFT JOIN horarios h ON m.idh=h.id
-                                    LEFT JOIN aula a ON h.ida=a.id
-                                    WHERE i.ide=$id and h.dia='$dia'";
+                                    if ($tipo=='estudiante'){
+                                        $sql = "SELECT * FROM inscripciones i
+                                        LEFT JOIN materias m ON i.idm=m.id
+                                        LEFT JOIN horarios h ON m.idh=h.id
+                                        LEFT JOIN aula a ON h.ida=a.id
+                                        WHERE i.ide=$id and h.dia='$dia'";
+                                    } else{
+                                        $sql = "SELECT * FROM materias m
+                                        LEFT JOIN horarios h ON m.idh=h.id
+                                        WHERE m.idd=$id and h.dia='$dia'";
+                                    }
                                     $resultado = $con->query($sql);
-                                    $horas = [];
-                                    $materias = [];
+                                    $info = [];
                                     while ($r = $resultado->fetch_assoc()){
                                         if ($r['hora_inicio']=='07:00:00' & $r['hora_fin']=='09:00:00'){
-                                            array_push($horas, 1);
-                                            array_push($materias, $r['materia']);
+                                            $info[1] = $r['materia'];
                                         }else if (($r['hora_inicio']=='09:00:00' & $r['hora_fin']=='11:00:00')){
-                                            array_push($horas, 2);
-                                            array_push($materias, $r['materia']);
+                                            $info[2] = $r['materia'];
                                         }else if (($r['hora_inicio']=='11:00:00' & $r['hora_fin']=='13:00:00')){
-                                            array_push($horas, 3);
-                                            array_push($materias, $r['materia']);
+                                            $info[3] = $r['materia'];
                                         }else if (($r['hora_inicio']=='14:00:00' & $r['hora_fin']=='16:00:00')){
-                                            array_push($horas, 4);
-                                            array_push($materias, $r['materia']);
+                                            $info[4] = $r['materia'];
                                         }else if (($r['hora_inicio']=='16:00:00' & $r['hora_fin']=='18:00:00')){
-                                            array_push($horas, 5);
-                                            array_push($materias, $r['materia']);
+                                            $info[5] = $r['materia'];
                                         }else if (($r['hora_inicio']=='18:00:00' & $r['hora_fin']=='20:00:00')){
-                                            array_push($horas, 6);
-                                            array_push($materias, $r['materia']);
+                                            $info[6] = $r['materia'];
                                         }else if (($r['hora_inicio']=='20:00:00' & $r['hora_fin']=='22:00:00')){
-                                            array_push($horas, 7);
-                                            array_push($materias, $r['materia']);
+                                            $info[7] = $r['materia'];
                                         }
                                     }
-                                    $c = 0;
                                     for ($i=1; $i<=7; $i++) {
-                                        if (in_array($i ,$horas)){
-                                            $materia = $materias[$c];
+                                        if (isset($info[$i])){
+                                            $materia = $info[$i];
                                             echo '<td class="text-center">'.$materia.'</td>';
-                                            $c = $c + 1;
                                         }else{
                                             echo '<td class="text-center">-</td>';
                                         }
@@ -232,6 +256,12 @@ include('conexion.php');
     <?php } ?>
 
     <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Cargar el contenido externo en el modal
+            $('#contenidoVentanaEmergente').load('ventana_emergente.html');
+        });
+    </script>
 </body>
 
 </html>
