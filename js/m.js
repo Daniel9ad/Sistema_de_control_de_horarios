@@ -56,5 +56,5 @@ function actualizarC(c) {
         }
     }
     ajax.setRequestHeader("Content-Type", "text/html; charset=utf-8");
-      ajax.send();
+    ajax.send();
 }

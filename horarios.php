@@ -151,7 +151,7 @@ include('conexion.php');
                                 ?>
                                 <td class="text-center">
                                     <button class="btn btn-outline-secondary d-inline-flex align-items-center"
-                                    data-bs-toggle="modal" data-bs-target="#ventanaEmergente"
+                                    onclick="editar('<?php echo 'lunes'; ?>',<?php echo $idaula; ?>)"
                                     style="padding: 0.5px 4px 0.5px 4px; font-size: 0.8rem;">
                                     <b>Editar</b>
                                     </button>
@@ -164,23 +164,27 @@ include('conexion.php');
 		</div>
 	</main>
 
- <!-- Ventana emergente (modal) -->
- <div class="modal fade" id="ventanaEmergente" tabindex="-1" role="dialog" aria-labelledby="ventanaEmergenteLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="ventanaEmergenteLabel">Contenido de la Ventana Emergente</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
-                <div id="contenidoVentanaEmergente"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+    <!-- Ventana emergente (modal) -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Editar Aula</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                  <!-- Aquí se mostrará el contenido de la fila cargado dinámicamente -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="cerrarModal" class="btn btn-secondary" data-dismiss="modal">
+                        Cerrar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     <?php } else if ($tipo=='estudiante' or $tipo=='docente') {
         $dias = ['lunes','martes','miercoles','jueves','viernes','sabado'];?>
@@ -192,7 +196,7 @@ include('conexion.php');
 				<table class="table table-striped table-sm mt-3">
 					<thead>
 						<tr>
-                            <th scope="col" class="text-center">#Dia</th>
+                            <th scope="col" class="text-center">Dia</th>
 							<th scope="0" class="text-center">07:00-09:00</th>
 							<th scope="1" class="text-center">09:00-11:00</th>
 							<th scope="1" class="text-center">11:00-13-00</th>
@@ -210,12 +214,12 @@ include('conexion.php');
                                     if ($tipo=='estudiante'){
                                         $sql = "SELECT * FROM inscripciones i
                                         LEFT JOIN materias m ON i.idm=m.id
-                                        LEFT JOIN horarios h ON m.idh=h.id
+                                        LEFT JOIN horarios h ON h.idm=m.id
                                         LEFT JOIN aula a ON h.ida=a.id
                                         WHERE i.ide=$id and h.dia='$dia'";
                                     } else{
                                         $sql = "SELECT * FROM materias m
-                                        LEFT JOIN horarios h ON m.idh=h.id
+                                        LEFT JOIN horarios h ON m.id=h.idm
                                         WHERE m.idd=$id and h.dia='$dia'";
                                     }
                                     $resultado = $con->query($sql);
@@ -256,11 +260,40 @@ include('conexion.php');
     <?php } ?>
 
     <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js.map"></script>
     <script>
-        $(document).ready(function () {
-            // Cargar el contenido externo en el modal
-            $('#contenidoVentanaEmergente').load('ventana_emergente.html');
-        });
+
+        function editar(dia, id) {
+            // Realiza una solicitud AJAX para obtener el contenido de la ventana emergente
+            var ajax = new XMLHttpRequest();
+            ajax.open('GET', 'editarAula.php?dia='+dia+'&ida='+id, true);
+            ajax.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+            //var data = { id: id };
+            //ajax.send(JSON.stringify(data));
+            ajax.send();
+            ajax.onload = function() {
+                if (ajax.status === 200) {
+                    // Abre un modal Bootstrap y muestra el contenido recibido
+                    var modal = document.getElementById('myModal');
+                    modal.querySelector('.modal-body').innerHTML = ajax.responseText;
+                    // Muestra el modal
+                    modal.classList.add('show');
+                    modal.style.display = 'block';
+                    document.body.classList.add('modal-open');
+                    // Agrega un controlador de eventos al botón de "Cerrar" dentro del modal
+                    var cerrarBtn = document.getElementById('cerrarModal');
+                    cerrarBtn.addEventListener('click', function() {
+                        // Cierra el modal
+                        modal.style.display = 'none';
+                        document.body.classList.remove('modal-open');
+                        modal.classList.remove('show');
+                    });
+                } else {
+                    console.error('Error al cargar la información:', ajax.statusText);
+                    alert('Error al cargar la información.');
+                }
+            }; 
+        }
     </script>
 </body>
 
