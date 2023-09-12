@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 06-09-2023 a las 02:56:30
+-- Tiempo de generación: 12-09-2023 a las 02:21:02
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -53,19 +53,21 @@ CREATE TABLE `horarios` (
   `dia` varchar(50) NOT NULL,
   `hora_inicio` time NOT NULL,
   `hora_fin` time NOT NULL,
-  `ida` int(11) NOT NULL
+  `ida` int(11) NOT NULL,
+  `idm` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `horarios`
 --
 
-INSERT INTO `horarios` (`id`, `dia`, `hora_inicio`, `hora_fin`, `ida`) VALUES
-(1, 'lunes', '07:00:00', '09:00:00', 1),
-(2, 'lunes', '11:00:00', '13:00:00', 2),
-(3, 'martes', '14:00:00', '16:00:00', 2),
-(4, 'miercoles', '16:00:00', '18:00:00', 1),
-(5, 'viernes', '11:00:00', '13:00:00', 2);
+INSERT INTO `horarios` (`id`, `dia`, `hora_inicio`, `hora_fin`, `ida`, `idm`) VALUES
+(1, 'lunes', '07:00:00', '09:00:00', 1, 1),
+(2, 'lunes', '11:00:00', '13:00:00', 2, 2),
+(3, 'martes', '14:00:00', '16:00:00', 2, 3),
+(4, 'miercoles', '16:00:00', '18:00:00', 1, 1),
+(5, 'viernes', '11:00:00', '13:00:00', 2, 2),
+(6, 'lunes', '11:00:00', '13:00:00', 1, 3);
 
 -- --------------------------------------------------------
 
@@ -75,18 +77,39 @@ INSERT INTO `horarios` (`id`, `dia`, `hora_inicio`, `hora_fin`, `ida`) VALUES
 
 CREATE TABLE `inscripciones` (
   `id` int(11) NOT NULL,
-  `idh` int(11) NOT NULL,
   `ide` int(11) NOT NULL,
-  `materia` varchar(30) NOT NULL
+  `idm` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `inscripciones`
 --
 
-INSERT INTO `inscripciones` (`id`, `idh`, `ide`, `materia`) VALUES
-(1, 2, 2, 'Sis421'),
-(2, 4, 2, 'Sis256');
+INSERT INTO `inscripciones` (`id`, `ide`, `idm`) VALUES
+(1, 2, 1),
+(2, 2, 2),
+(3, 2, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `materias`
+--
+
+CREATE TABLE `materias` (
+  `id` int(11) NOT NULL,
+  `materia` varchar(50) NOT NULL,
+  `idd` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `materias`
+--
+
+INSERT INTO `materias` (`id`, `materia`, `idd`) VALUES
+(1, 'Sis421', 3),
+(2, 'Sis256', 3),
+(3, 'Fis200', 4);
 
 -- --------------------------------------------------------
 
@@ -106,7 +129,8 @@ CREATE TABLE `usuario` (
 
 INSERT INTO `usuario` (`id`, `nombre`, `tipo`) VALUES
 (1, 'ad1', 'administrador'),
-(2, 'e1', 'estudiante');
+(2, 'e1', 'estudiante'),
+(3, 'd1', 'docente');
 
 --
 -- Índices para tablas volcadas
@@ -131,6 +155,12 @@ ALTER TABLE `inscripciones`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indices de la tabla `materias`
+--
+ALTER TABLE `materias`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `usuario`
 --
 ALTER TABLE `usuario`
@@ -150,19 +180,25 @@ ALTER TABLE `aula`
 -- AUTO_INCREMENT de la tabla `horarios`
 --
 ALTER TABLE `horarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `inscripciones`
 --
 ALTER TABLE `inscripciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `materias`
+--
+ALTER TABLE `materias`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
