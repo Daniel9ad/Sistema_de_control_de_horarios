@@ -170,13 +170,11 @@ include('conexion.php');
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Editar Aula</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
                 </div>
                 <div class="modal-body">
                   <!-- Aquí se mostrará el contenido de la fila cargado dinámicamente -->
                 </div>
+                <div class="modal-body" id="v"></div>
                 <div class="modal-footer">
                     <button type="button" id="cerrarModal" class="btn btn-secondary" data-dismiss="modal">
                         Cerrar
@@ -262,7 +260,6 @@ include('conexion.php');
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/bootstrap.bundle.min.js.map"></script>
     <script>
-
         function editar(dia, id) {
             // Realiza una solicitud AJAX para obtener el contenido de la ventana emergente
             var ajax = new XMLHttpRequest();
@@ -293,6 +290,36 @@ include('conexion.php');
                     alert('Error al cargar la información.');
                 }
             }; 
+        }
+
+        function insertarHorario(dia,hi,hf,ida,i) {
+            console.log('insertando');
+            var idm = document.getElementById(i).selectedIndex;
+            var contenedor = document.getElementById('v');
+            var ajax = new XMLHttpRequest()
+            ajax.open("get", 'createHorario.php?dia='+dia+'&hi='+hi+'&hf='+hf+'&ida='+ida+'&idm='+idm, true);
+            ajax.onreadystatechange = function () {
+                if (ajax.readyState == 4) {
+                    contenedor.innerHTML = ajax.responseText;
+                }
+            }
+            ajax.setRequestHeader("Content-Type", "text/html; charset=utf-8");
+            ajax.send();
+        }
+
+        function actualizarHorario(i, idh) {
+            console.log('actualizar');
+            var idm = document.getElementById(i).selectedIndex;
+            var contenedor = document.getElementById('v');
+            var ajax = new XMLHttpRequest()
+            ajax.open("get", 'updateHorario.php?idm='+idm+'&idh='+idh, true);
+            ajax.onreadystatechange = function () {
+                if (ajax.readyState == 4) {
+                    contenedor.innerHTML = ajax.responseText;
+                }
+            }
+            ajax.setRequestHeader("Content-Type", "text/html; charset=utf-8");
+            ajax.send();
         }
     </script>
 </body>
