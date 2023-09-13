@@ -219,31 +219,34 @@ include('conexion.php');
                                     } else{
                                         $sql = "SELECT * FROM materias m
                                         LEFT JOIN horarios h ON m.id=h.idm
+                                        LEFT JOIN aula a ON h.ida=a.id
                                         WHERE m.idd=$id and h.dia='$dia'";
                                     }
                                     $resultado = $con->query($sql);
                                     $info = [];
                                     while ($r = $resultado->fetch_assoc()){
                                         if ($r['hora_inicio']=='07:00:00' & $r['hora_fin']=='09:00:00'){
-                                            $info[1] = $r['materia'];
+                                            $info[1] = [$r['materia'],$r['nombre'],$r['ida']];
                                         }else if (($r['hora_inicio']=='09:00:00' & $r['hora_fin']=='11:00:00')){
-                                            $info[2] = $r['materia'];
+                                            $info[2] = [$r['materia'],$r['nombre'],$r['ida']];
                                         }else if (($r['hora_inicio']=='11:00:00' & $r['hora_fin']=='13:00:00')){
-                                            $info[3] = $r['materia'];
+                                            $info[3] = [$r['materia'],$r['nombre'],$r['ida']];
                                         }else if (($r['hora_inicio']=='14:00:00' & $r['hora_fin']=='16:00:00')){
-                                            $info[4] = $r['materia'];
+                                            $info[4] = [$r['materia'],$r['nombre'],$r['ida']];
                                         }else if (($r['hora_inicio']=='16:00:00' & $r['hora_fin']=='18:00:00')){
-                                            $info[5] = $r['materia'];
+                                            $info[5] = [$r['materia'],$r['nombre'],$r['ida']];
                                         }else if (($r['hora_inicio']=='18:00:00' & $r['hora_fin']=='20:00:00')){
-                                            $info[6] = $r['materia'];
+                                            $info[6] = [$r['materia'],$r['nombre'],$r['ida']];
                                         }else if (($r['hora_inicio']=='20:00:00' & $r['hora_fin']=='22:00:00')){
-                                            $info[7] = $r['materia'];
+                                            $info[7] = [$r['materia'],$r['nombre'],$r['ida']];
                                         }
                                     }
                                     for ($i=1; $i<=7; $i++) {
                                         if (isset($info[$i])){
-                                            $materia = $info[$i];
-                                            echo '<td class="text-center">'.$materia.'</td>';
+                                            $materia = $info[$i][0];
+                                            $naula = $info[$i][1];
+                                            $idaula = $info[$i][2];
+                                            echo '<td class="text-center">'.$materia.' - <a onclick="mostrarAula('.$idaula.');">'.$naula.'</a></td>';
                                         }else{
                                             echo '<td class="text-center">-</td>';
                                         }
@@ -257,6 +260,26 @@ include('conexion.php');
 		</div>
 	</main>
     <?php } ?>
+
+    <!-- Ventana emergente (modal) -->
+    <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Aula</h5>
+                </div>
+                <div class="modal-body">
+                  <!-- Aquí se mostrará el contenido de la fila cargado dinámicamente -->
+                </div>
+                <div class="modal-body" id="v"></div>
+                <div class="modal-footer">
+                    <button type="button" id="cerrarModal" class="btn btn-secondary" data-dismiss="modal">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/bootstrap.bundle.min.js.map"></script>
@@ -273,6 +296,38 @@ include('conexion.php');
                 if (ajax.status === 200) {
                     // Abre un modal Bootstrap y muestra el contenido recibido
                     var modal = document.getElementById('myModal');
+                    modal.querySelector('.modal-body').innerHTML = ajax.responseText;
+                    // Muestra el modal
+                    modal.classList.add('show');
+                    modal.style.display = 'block';
+                    document.body.classList.add('modal-open');
+                    // Agrega un controlador de eventos al botón de "Cerrar" dentro del modal
+                    var cerrarBtn = document.getElementById('cerrarModal');
+                    cerrarBtn.addEventListener('click', function() {
+                        // Cierra el modal
+                        modal.style.display = 'none';
+                        document.body.classList.remove('modal-open');
+                        modal.classList.remove('show');
+                    });
+                } else {
+                    console.error('Error al cargar la información:', ajax.statusText);
+                    alert('Error al cargar la información.');
+                }
+            }; 
+        }
+
+        function mostrarAula(id) {
+            // Realiza una solicitud AJAX para obtener el contenido de la ventana emergente
+            var ajax = new XMLHttpRequest();
+            ajax.open('GET', 'mostrarUA.php?id='+id, true);
+            ajax.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+            //var data = { id: id };
+            //ajax.send(JSON.stringify(data));
+            ajax.send();
+            ajax.onload = function() {
+                if (ajax.status === 200) {
+                    // Abre un modal Bootstrap y muestra el contenido recibido
+                    var modal = document.getElementById('myModal2');
                     modal.querySelector('.modal-body').innerHTML = ajax.responseText;
                     // Muestra el modal
                     modal.classList.add('show');
